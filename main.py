@@ -35,10 +35,10 @@ def get_html_txt(address):
         response = requests.get(address, headers=headers)
         response.raise_for_status()  # checks for http error if occurred.
         html_data = response.text
-        print("Successfully Read Data!")
+        print(f"[DEBUG] Successfully read data from {address}!")
         return html_data
     except requests.exceptions.RequestException as e:
-        print(f"Error reading data: {e}")
+        print(f"Error reading data: from {address}\nError:{e}")
 
 # Data cleaning
 def clean_up(string):
@@ -85,7 +85,7 @@ print(f"[DEBUG] Cleaned up text: {textIngredients}")
 
 delimiters_found = detect_delimiters(textIngredients)
 delimiter = most_frequent(delimiters_found)
-print(f"[DEBUG] Delimiter is: {delimiter}")
+print(f"[DEBUG] Delimiter is: {delimiter}\n")
 
 listIngredients = [
     re.sub(r'\\+', '/', re.sub(r'\s*/\s*', '/', item.strip()))  # Replace \ with / and clean spaces around /
