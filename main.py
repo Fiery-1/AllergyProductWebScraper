@@ -14,12 +14,11 @@ url = "https://www.boots.com/plantur-21-long-hair-shampoo-200ml-10307642"
 # TODO: Make it automatically detect this domain.
 website_name = "boots.com"
 
-
 # Getting HTML data
-def get_required_tag(domain_name):
+def get_required_tag(soup_obj,domain_name):
     try:
         if domain_name == "boots.com":
-            tag = soup.find('h3', id="product_ingredients").find_next('p')
+            tag = soup_obj.find('h3', id="product_ingredients").find_next('p')
 
             return tag
         else:
@@ -44,7 +43,6 @@ def get_html_txt(address):
 # Data cleaning
 def clean_up(string):
     return re.sub(r'\s+', ' ', string).strip().upper()
-
 def normalise_list(array):
     normalised_list = {}
     for item in array:
@@ -52,7 +50,6 @@ def normalise_list(array):
         for comp in components:
             normalised_list[comp.strip().upper()] = item  # Map each component to its original values
     return normalised_list
-
 
 # Detects all possible delimiters in a string of text
 def detect_delimiters(string):
@@ -75,7 +72,7 @@ html = get_html_txt(url)
 soup = BeautifulSoup(html, parser)
 
 # Find the ingredients section
-ingredientsTag = get_required_tag(website_name)
+ingredientsTag = get_required_tag(soup, website_name)
 
 #Get text only from the tag
 textIngredients = ingredientsTag.text
@@ -110,14 +107,18 @@ while allergy.upper() not in ["EXIT", "STOP"]:
 # Check for allergies
 print("\nIngredients List:", listIngredients)
 print("Allergy List:", allergyList)
-
+detectedAllergens = []
 safe = True
 for allergy in allergyList:
     if allergy in productAllergenList:
-        print(f"Allergy Found! Contains: {productAllergenList[allergy].title()}")
+        ingredient = productAllergenList[allergy].title()
+        print(f"Allergy Found! Contains: {ingredient}")
+        detectedAllergens.append(ingredient)
         safe = False
 
 if safe:
     print("\nProduct is SAFE for you to use! :)")
+
 else:
     print("\nProduct is UNSAFE for you to use!")
+    print("Contains: " + str(detectedAllergens))
