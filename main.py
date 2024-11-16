@@ -6,7 +6,7 @@ import requests
 headers = {
     "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:87.0) Gecko/20100101 Firefox/87.0"
 }
-url = "https://www.boots.com/aveda-botanical-repair-strengthening-conditioner-200ml-10352741"
+url = "https://www.boots.com/batiste-dry-shampoo-original-350ml-10297620"
 try:
     response = requests.get(url, headers=headers)
     response.raise_for_status()
@@ -23,8 +23,12 @@ def most_frequent(List):
     return max(set(List), key=List.count)
 # Find the ingredients section
 ingredientsLabelId = "product_ingredients"
-tagIngredients = soup.find('h3', id=ingredientsLabelId).find_next('p')
-print(tagIngredients)
+try:
+    tagIngredients = soup.find('h3', id=ingredientsLabelId).find_next('p')
+except AttributeError as e:
+    print("Couldn't find ingredients on this page!")
+    exit()
+# print(tagIngredients)
 # Extract and clean the ingredients text
 textIngredients = tagIngredients.text
 
@@ -39,7 +43,7 @@ for i, letter in enumerate(textIngredients):
         before = textIngredients[i - 1] if i > 0 else None  # Check if there's a previous letter
         after = textIngredients[i + 1] if i < len(textIngredients) - 1 else None  # Check if there's a next letter
         # print(f"'{letter}' is not alphanum. Before: '{before}', After: '{after}'")
-        if before != None and after == ' ':
+        if before is not None and after == ' ':
             # print(f"Delimiter should be {letter}.")
             delimiterCount.append(letter)
 
