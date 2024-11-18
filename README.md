@@ -1,0 +1,3 @@
+Finds products the user can use when given a list of allergens.
+Uses python to webscrape pages like boots.com etc...
+Soon will have web frontend for easy access for many people.
