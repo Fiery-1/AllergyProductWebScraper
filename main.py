@@ -1,3 +1,5 @@
+from contextlib import nullcontext
+
 from bs4 import BeautifulSoup
 import requests
 import re
@@ -35,7 +37,7 @@ def get_html_txt(address):
         response = requests.get(address, headers=headers)
         response.raise_for_status()  # checks for http error if occurred.
         html_data = response.text
-        print(f"[DEBUG] Successfully read data from {address}!")
+        print(f"[DEBUG] Successfully read data from {address}")
         return html_data
     except requests.exceptions.RequestException as e:
         print(f"Error reading data: from {address}\nError:{e}")
@@ -55,6 +57,7 @@ def normalise_list(array):
 def detect_delimiters(string):
     delimiter_list = []
     for i, letter in enumerate(string):
+
         if letter.isalnum() or letter.isspace():
             continue
         else:
@@ -81,11 +84,27 @@ textIngredients = clean_up(textIngredients)
 
 print(f"[DEBUG] Cleaned up text: {textIngredients}")
 
+# DEBUG:
+textIngredients = "Aqua Sodium Laureth Sulfate Cocamidopropyl Betaine PEG-3 Distearate Glycerin Sodium Chloride Panthenol Caffeine Coco-Glucoside Glyceryl Oleate Polyquaternium-7 Polyquaternium-10 Citric Acid Calcium Gluconate Magnesium Gluconate Niacinamide Zinc Chloride Biotin Hydrolyzed Keratin Potassium Sorbate Sodium Benzoate Phenoxyethanol Sorbic Acid Parfum Benzyl Benzoate Linalool CI 16035."
 
 
 delimiters_found = detect_delimiters(textIngredients)
+if delimiters_found == []:
+    print("Delimiter not found.")
 delimiter = most_frequent(delimiters_found)
+how_many_delimiter = delimiters_found.count(delimiter)
+
+numberOfWords = len(textIngredients.split())
+
+
+print(f"[DEBUG] length of textIngredients.split() = {numberOfWords}")
+print(f"\n[DEBUG] how_many_delimiter = {how_many_delimiter}")
+certainty = how_many_delimiter/(numberOfWords-how_many_delimiter)
+
 print(f"[DEBUG] Delimiter is: {delimiter}\n")
+print(f"[DEBUG] Certainty = {round(certainty,2)*100}%")
+if certainty < 0.5:
+    print(f"Certainty is less than 50%, won't add page to database but will show results and use fall back algorithm.")
 
 listIngredients = [
     re.sub(r'\\+', '/', re.sub(r'\s*/\s*', '/', item.strip()))  # Replace \ with / and clean spaces around /
