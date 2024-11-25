@@ -82,62 +82,64 @@ textIngredients = ingredientsTag.text
 # Clean text for using in algorithm
 textIngredients = clean_up(textIngredients)
 
-print(f"[DEBUG] Cleaned up text: {textIngredients}")
 
 # DEBUG:
 textIngredients = "Aqua Sodium Laureth Sulfate Cocamidopropyl Betaine PEG-3 Distearate Glycerin Sodium Chloride Panthenol Caffeine Coco-Glucoside Glyceryl Oleate Polyquaternium-7 Polyquaternium-10 Citric Acid Calcium Gluconate Magnesium Gluconate Niacinamide Zinc Chloride Biotin Hydrolyzed Keratin Potassium Sorbate Sodium Benzoate Phenoxyethanol Sorbic Acid Parfum Benzyl Benzoate Linalool CI 16035."
 
+print(f"[DEBUG] Cleaned up text: {textIngredients}")
+
 
 delimiters_found = detect_delimiters(textIngredients)
-if delimiters_found == []:
-    print("Delimiter not found.")
-delimiter = most_frequent(delimiters_found)
-how_many_delimiter = delimiters_found.count(delimiter)
-
-numberOfWords = len(textIngredients.split())
-
-
-print(f"[DEBUG] length of textIngredients.split() = {numberOfWords}")
-print(f"\n[DEBUG] how_many_delimiter = {how_many_delimiter}")
-certainty = how_many_delimiter/(numberOfWords-how_many_delimiter)
-
-print(f"[DEBUG] Delimiter is: {delimiter}\n")
-print(f"[DEBUG] Certainty = {round(certainty,2)*100}%")
-if certainty < 0.5:
-    print(f"Certainty is less than 50%, won't add page to database but will show results and use fall back algorithm.")
-
-listIngredients = [
-    re.sub(r'\\+', '/', re.sub(r'\s*/\s*', '/', item.strip()))  # Replace \ with / and clean spaces around /
-    # has to happen after delimiter check incase it was a delimiter
-    for item in textIngredients.split(delimiter) if item.strip()
-]
-
-# Normalise the ingredients for allergy detection
-productAllergenList = normalise_list(listIngredients)
-
-# Ask the user for allergies
-allergyList = []
-allergy = ""
-while allergy.upper() not in ["EXIT", "STOP"]:
-    allergy = input("Enter allergy (EXIT/STOP): ")
-    if allergy.upper() not in ["EXIT", "STOP"]:
-        allergyList.append(allergy.upper())
-
-# Check for allergies
-print("\nIngredients List:", listIngredients)
-print("Allergy List:", allergyList)
-detectedAllergens = []
-safe = True
-for allergy in allergyList:
-    if allergy in productAllergenList:
-        ingredient = productAllergenList[allergy].title()
-        print(f"Allergy Found! Contains: {ingredient}")
-        detectedAllergens.append(ingredient)
-        safe = False
-
-if safe:
-    print("\nProduct is SAFE for you to use! :)")
-
+if not delimiters_found:
+    print("Delimiter not found. Using alternative algorithm.\nWon't save result in Database.")
 else:
-    print("\nProduct is UNSAFE for you to use!")
-    print("Contains: " + str(detectedAllergens))
+    delimiter = most_frequent(delimiters_found)
+    how_many_delimiter = delimiters_found.count(delimiter)
+
+    numberOfWords = len(textIngredients.split())
+
+
+    print(f"[DEBUG] length of textIngredients.split() = {numberOfWords}")
+    print(f"\n[DEBUG] how_many_delimiter = {how_many_delimiter}")
+    certainty = how_many_delimiter/(numberOfWords-how_many_delimiter)
+
+    print(f"[DEBUG] Delimiter is: {delimiter}\n")
+    print(f"[DEBUG] Certainty = {round(certainty,2)*100}%")
+    if certainty < 0.5:
+        print(f"Certainty is less than 50%, won't add page to database but will show results and use fall back algorithm.")
+
+    listIngredients = [
+        re.sub(r'\\+', '/', re.sub(r'\s*/\s*', '/', item.strip()))  # Replace \ with / and clean spaces around /
+        # has to happen after delimiter check incase it was a delimiter
+        for item in textIngredients.split(delimiter) if item.strip()
+    ]
+
+    # Normalise the ingredients for allergy detection
+    productAllergenList = normalise_list(listIngredients)
+
+    # Ask the user for allergies
+    allergyList = []
+    allergy = ""
+    while allergy.upper() not in ["EXIT", "STOP"]:
+        allergy = input("Enter allergy (EXIT/STOP): ")
+        if allergy.upper() not in ["EXIT", "STOP"]:
+            allergyList.append(allergy.upper())
+
+    # Check for allergies
+    print("\nIngredients List:", listIngredients)
+    print("Allergy List:", allergyList)
+    detectedAllergens = []
+    safe = True
+    for allergy in allergyList:
+        if allergy in productAllergenList:
+            ingredient = productAllergenList[allergy].title()
+            print(f"Allergy Found! Contains: {ingredient}")
+            detectedAllergens.append(ingredient)
+            safe = False
+
+    if safe:
+        print("\nProduct is SAFE for you to use! :)")
+
+    else:
+        print("\nProduct is UNSAFE for you to use!")
+        print("Contains: " + str(detectedAllergens))
