@@ -91,7 +91,8 @@ print(f"[DEBUG] Cleaned up text: {textIngredients}")
 
 delimiters_found = detect_delimiters(textIngredients)
 if not delimiters_found:
-    print("Delimiter not found. Using alternative algorithm.\nWon't save result in Database.")
+    print("A Delimiter was not found. Using alternative algorithm.\nThis won't save any ingredients from this product in the SQL Database.")
+#     could add the ingredients found using ctrl f to database still.
 else:
     delimiter = most_frequent(delimiters_found)
     how_many_delimiter = delimiters_found.count(delimiter)
@@ -105,6 +106,7 @@ else:
 
     print(f"[DEBUG] Delimiter is: {delimiter}\n")
     print(f"[DEBUG] Certainty = {round(certainty,2)*100}%")
+    # Dont save to avoid poisoning the db.
     if certainty < 0.5:
         print(f"Certainty is less than 50%, won't add page to database but will show results and use fall back algorithm.")
 
