@@ -32,6 +32,8 @@ pip install beautifulsoup4 requests
 
 ## Usage
 
+**!!!THIS DOESN'T WORK YET!!!**
+
 Provide a list of allergens in a text file or directly as input.
 
 Run the script:
