@@ -84,7 +84,7 @@ textIngredients = clean_up(textIngredients)
 
 
 # DEBUG:
-textIngredients = "Aqua Sodium Laureth Sulfate Cocamidopropyl Betaine PEG-3 Distearate Glycerin Sodium Chloride Panthenol Caffeine Coco-Glucoside Glyceryl Oleate Polyquaternium-7 Polyquaternium-10 Citric Acid Calcium Gluconate Magnesium Gluconate Niacinamide Zinc Chloride Biotin Hydrolyzed Keratin Potassium Sorbate Sodium Benzoate Phenoxyethanol Sorbic Acid Parfum Benzyl Benzoate Linalool CI 16035."
+# textIngredients = "Aqua Sodium Laureth Sulfate Cocamidopropyl Betaine PEG-3 Distearate Glycerin Sodium Chloride Panthenol Caffeine Coco-Glucoside Glyceryl Oleate Polyquaternium-7 Polyquaternium-10 Citric Acid Calcium Gluconate Magnesium Gluconate Niacinamide Zinc Chloride Biotin Hydrolyzed Keratin Potassium Sorbate Sodium Benzoate Phenoxyethanol Sorbic Acid Parfum Benzyl Benzoate Linalool CI 16035."
 
 print(f"[DEBUG] Cleaned up text: {textIngredients}")
 
@@ -106,8 +106,10 @@ else:
 
     print(f"[DEBUG] Delimiter is: {delimiter}\n")
     print(f"[DEBUG] Certainty = {round(certainty,2)*100}%")
-    # Dont save to avoid poisoning the db.
+
+    # Don't save to avoid poisoning the db.
     if certainty < 0.5:
+        dontSave = True
         print(f"Certainty is less than 50%, won't add page to database but will show results and use fall back algorithm.")
 
     listIngredients = [
